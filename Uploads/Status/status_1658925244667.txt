@@ -1,0 +1,27 @@
+		MERN STACK Course
+
+1) Downlode & Install Node js(LTS version) 
+	a)link:https://nodejs.org/en/download/
+	b)Open Command Prompt and check Version of Node Js (node -v)
+
+2) Create a folder like "MERN STACK" and open with vs code
+	a)Under main folder create two folders like "backend" and "frontend" 
+	b)Open a new Terminal and move to backend folder (cd backend)
+	c)Under backend folder
+		i)create new file "server.js"
+	 	ii)create package.json file (npm init -y)
+		iii)install express library (npm install express)
+
+3) Run server.js file
+	Command: node server.js
+
+4) For auto relode install nodemon
+	Command: npm install nodemon
+
+5) Run server.js file using nodemon
+	Command: nodemon server.js
+
+6) For create envoronment veriable 
+	Command: npm install dotenv
+
+					
