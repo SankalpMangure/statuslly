@@ -27,8 +27,11 @@ exports.commentmastertbl = async (req, res) => {
 
 exports.addcommentlike = async (req, res) => {
   const data = req.body;
-
-  let dt = JSON.stringify(data);
+  let data1={
+    "cmtid":data.cmntid,    
+    "uid":data.uid
+  }
+  let dt = JSON.stringify(data1);
   let sdt = dt.replace(/\\/g, "");
 
   let sql = `CALL sp_commentlikemaster(?,?)`;

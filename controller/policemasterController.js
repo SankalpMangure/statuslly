@@ -25,8 +25,12 @@ exports.policemastertbl = async (req, res) => {
 
 exports.savereport = async (req, res) => {
   const data = req.body;
-
-  let dt = JSON.stringify(data);
+let data1={
+  "reportuid":data.uid,
+  "stsid":data.stsid,
+  "report":data.remark
+}
+  let dt = JSON.stringify(data1);
   let sdt = dt.replace(/\\/g, "");
 
   let sql = `CALL sp_policemaster(?,?)`;

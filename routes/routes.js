@@ -20,29 +20,43 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 router.get("/logintbl", LoginController.logintbl);
 router.post("/userblock", LoginController.userblock);
 router.post("/signup", LoginController.signup);
-router.post("/signin", LoginController.signin);
+// router.post("/signin", LoginController.signin);
+router.post("/signin", LoginController.signup);
 router.post("/verifyotp", LoginController.verifyotp);
 router.post("/getuserdetail", LoginController.getuserdetail);
+router.post("/getuserdata", LoginController.getuserdetail);
+router.post("/updateprofile", LoginController.updateprofile);
+router.post("/getuser_latlong", LoginController.getuserdetail);
+router.post("/search_user", LoginController.getuserdetail);
+router.post("/updateprofile_pic",LoginController.updateprofile_pic);
+router.post("/deleteuserimage",LoginController.deleteuserimage);
 
 router.get("/statustbl", StatusmasterController.statusmastertbl);
-router.post("/savestatus", StatusmasterController.savestatus);
+router.post("/create_new_status", StatusmasterController.create_new_status);
 router.post("/stsviewutp", StatusmasterController.isviewcnt);
-router.post("/stsdelete", StatusmasterController.deletestatus);
-router.post("/getstatus", StatusmasterController.getstatus);
+router.post("/del_status", StatusmasterController.deletestatus);
+router.post("/get_userstatus_det", StatusmasterController.get_userstatus_det);
+router.get("/getalluser_status", StatusmasterController.getalluser_status);
+router.post("/status_det", StatusmasterController.getalluser_status);
+router.post("/insertstatus",StatusmasterController.insertstatus);
+router.post("/createnewstatusmaster",StatusmasterController.create_new_statusmaster);
 
-router.post("/likestatus", StatuslikemasterController.likestatus);
+router.post("/set_likeviewcnt", StatuslikemasterController.set_likeviewcnt);
 router.post("/dislikestatus", StatuslikemasterController.statusdislike);
 router.post("/getstatuslike", StatuslikemasterController.getstatuslike);
+router.post("/get_lslike_status", StatuslikemasterController.get_lslike_status);
 
 router.get("/statusliketbl", StatuslikemasterController.statuslikemastertbl);
 
 router.get("/commenttbl", CommentmasterController.commentmastertbl);
-router.post("/addcomment", CommentmasterController.addcomment);
+
+router.post("/savecomment", CommentmasterController.addcomment);
 router.post("/deletecmt", CommentmasterController.deletecmt);
 router.post("/getcmtdetail", CommentmasterController.getcmtdetail);
+router.post("/get_status_comment", CommentmasterController.getcmtdetail);
 
 router.get("/commentliketbl", CommentlikemasterController.commentmastertbl);
-router.post("/addcommentlike", CommentlikemasterController.addcommentlike);
+router.post("/savecomment_like", CommentlikemasterController.addcommentlike);
 router.post("/commentdislike", CommentlikemasterController.commentdislike);
 router.post("/getcmtlikedetail", CommentlikemasterController.getcmtlikedetail);
 
@@ -61,6 +75,7 @@ router.get("/followtbl", followmasterController.followmastertbl);
 router.post("/follow", followmasterController.follow);
 router.post("/unfollow", followmasterController.unfollow);
 router.post("/getfollowdetail", followmasterController.getfollowdetail);
+router.post("/following", followmasterController.following);
 
 router.get("/policetbl", PolicemasterController.policemastertbl);
 router.post("/savereport", PolicemasterController.savereport);

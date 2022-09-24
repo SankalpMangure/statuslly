@@ -25,8 +25,14 @@ exports.commentmastertbl = async (req, res) => {
 
 exports.addcomment = async (req, res) => {
   const data = req.body;
-
-  let dt = JSON.stringify(data);
+  // "cmtid":data.id,
+  let data1={
+    "stsid":data.stsid,
+    "uid":data.uid,
+    "cmt":data.comment,
+    "islikecnt":"0",   
+  }
+  let dt = JSON.stringify(data1);
   let sdt = dt.replace(/\\/g, "");
 
   let sql = `CALL sp_commentmaster(?,?)`;
@@ -99,9 +105,13 @@ exports.getcmtdetail = async (req, res) => {
 
       return res.json(data1);
     }
+    let cmntData=resdata[0][0];
+    let custmData={
+      "id":cmntData.cmtid,"likecnt":cmntData.islikecnt,"dislikecnt":0,"uid":cmntData.uid,"comment":cmntData.cmt,"stsid":cmntData.stsid
+    };
     const data1 = {
       code: 200,
-      data: resdata[0],
+      data: custmData,
       msg: "Data found successfully",
     };
 

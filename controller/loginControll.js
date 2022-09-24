@@ -1,8 +1,11 @@
 const db = require("../db/db");
+const fs = require("fs");
 const { LoginModel } = require("../models/Login");
-const { droptable, execute_query } = require("../routes/globalroute.js");
+const { droptable, execute_query, imgdelete } = require("../routes/globalroute.js");
 var unirest = require("unirest");
 const { response } = require("express");
+const multer = require("multer");
+
 
 exports.createdb = () => {
   let sql = "CREATE DATABASE statuslly";
@@ -109,11 +112,11 @@ exports.signup = async (req, res) => {
   const checkmob = await checkmobno(data.mobileno);
 
   if (checkmob[0]?.uid > 0) {
-    let data = {
-      code: 300,
-      msg: "User allready exists",
-    };
-    return res.json(data);
+    // let data = {
+    //   code: 300,
+    //   msg: "User allready exists",
+    // };
+    // return res.json(data);
   } else if (checkmob == 300) {
     let data = {
       code: 300,
@@ -215,13 +218,14 @@ exports.verifyotp = async (req, res) => {
       let data = {
         code: 200,
         msg: "Account verified successfully",
-        data: [
-          {
-            mobileno: result[0].mobileno,
-            uid: result[0].uid,
-            isblock: result[0].isblock,
-          },
-        ],
+        data:
+        {
+          // mobileno: result[0].mobileno,
+          id: result[0].uid,
+          // isblock: result[0].isblock,
+          isupdate: "true",
+        },
+
       };
       return res.json(data);
     } else {
@@ -281,10 +285,18 @@ exports.userblock = async (req, res) => {
 exports.getuserdetail = async (req, res) => {
   const data = req.body;
   let whr = "";
+  // if (data.uid > 0) {
+  //   whr += ` and uid = ${data.uid}`;
+  // }
+
+  //data.id==uid
   if (data.uid > 0) {
     whr += ` and uid = ${data.uid}`;
   }
-  if (data.uname > 0) {
+  if (data.id > 0) {
+    whr += ` and uid = ${data.id}`;
+  }
+  if (!data.uname == "") {
     whr += ` and uname like '%${data.uname}%'`;
   }
   if (data.isblock > 0) {
@@ -295,6 +307,10 @@ exports.getuserdetail = async (req, res) => {
   }
   if (!data.emailid == "") {
     whr += ` and emailid = '${data.emailid}'`;
+  }
+  if (!data.latitude == "" && !data.longitude == "") {
+    whr += ` and latitude like '%${data.latitude}%'`;
+    whr += ` and longitude like '%${data.longitude}%'`;
   }
   if (!data.search == "") {
     whr += ` and city = '${data.search}'`;
@@ -322,12 +338,196 @@ exports.getuserdetail = async (req, res) => {
 
       return res.json(data1);
     }
+    // const user=resdata[0][0];
+    let newArr = [];
+    resdata[0].forEach(element => {
+      let user = element;
+      let custmData = {
+        "id": user.uid, "following": user.followcnt, "follower": user.followercnt,
+        "uname": user.uname, "mobileno": user.mobileno, "emailid": user.emailid, "refmoileno": "-", "profilepic": user.userpick,
+        "city": user.city, "state": user.state, "country": user.country
+      }
+      newArr.push(custmData);
+    });
+
     const data1 = {
       code: 200,
-      data: resdata[0],
+      data: newArr,
       msg: "Data found successfully",
     };
 
     return res.json(data1);
   }
+};
+
+
+exports.updateprofile = async (req, res) => {
+  const data = req.body;
+  let whr = " UPDATE login set";
+
+  //data.id==uid
+
+  // if (!data.uname == "") {
+  whr += ` uname = '${data.uname}'`;
+  // }
+  // if (!data.city == "") {
+  whr += ` , city = '${data.city}'`;
+  // }
+  // if (!data.state == "") {
+  whr += ` , state = '${data.state}'`;
+  // }
+  // if (!data.country == "") {
+  whr += ` , country = '${data.country}'`;
+  // }
+  // if (data.id > 0) {
+  whr += ` where uid = '${data.id}'`;
+  // }
+  console.log(whr);
+  let data1 = {
+    whr: whr,
+  };
+  let dt = JSON.stringify(data1);
+  let sdt = dt.replace(/\\/g, "");
+
+  let sql = `CALL sp_login(?,?)`;
+  const resdata = await execute_query(sql, sdt, 7);
+  data1 = {
+    code: 200,
+    msg: "Profile Update successfully",
+  };
+  return res.json(data1);
+};
+
+
+exports.updateprofile_pic = async (request, response) => {
+  let stslink = {};
+  let stslinkArray = [];
+  // this.deleteuserimage(request.body.id);
+  var storage = multer.diskStorage({
+    destination: function (request, file, callback) {
+      callback(null, "./Uploads/Status");
+    },
+    filename: function (request, file, callback) {
+      var temp_file_arr = file.originalname.split(".");
+      var temp_file_type = file.mimetype;
+      var temp_file_name = `status_`;
+
+      var temp_file_extension = temp_file_arr[1];
+      var fname = temp_file_name + "" + Date.now() + "." + temp_file_extension;
+      callback(
+        null,
+        temp_file_name + "" + Date.now() + "." + temp_file_extension
+      );
+      stslink = {
+        id: Date.now(),
+        img: fname,
+        media_type: temp_file_type,
+      };
+      stslinkArray.push(stslink);
+    },
+  });
+
+  var upload = multer({ storage: storage, uid: "2" }).array("file[]");
+  var yesterday = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+
+  upload(request, response, function (error) {
+    if (error) {
+      let data = {
+        code: 300,
+        msg: "Something went wrong! please try again",
+      };
+      return res.json(data);
+    } else {
+      var d = new Date();
+      let data = {
+        uid: request.body.id,
+        userpick: JSON.stringify(stslinkArray),
+
+      };
+      let sql = `UPDATE ${new LoginModel().tablename} SET`;
+      sql += ` userpick='${JSON.stringify(stslinkArray)}'`;
+      sql += ` where uid='${request.body.id}'`;
+      db.query(sql, (err, result) => {
+        if (err) {
+          stslinkArray.forEach((element) => {
+            var imgpath =
+              "" + element.img;
+
+            fs.unlink(imgpath, function (err) {
+              if (err) {
+                return response.json(err);
+              }
+              // if no error, file has been deleted successfully
+            });
+          });
+          let data = {
+            code: 500,
+            msg: "Something went wrong! please try again",
+            error: err,
+          };
+          return response.json(data);
+        }
+        if (!result) {
+          let data = {
+            code: 300,
+            msg: "Something went wrong! please try again",
+          };
+          return response.json(data);
+        } else {
+          let data = {
+            code: 200,
+            msg: "Profile updated successfully",
+          };
+          return response.json(data);
+        }
+      });
+    }
+  });
+};
+
+exports.deleteuserimage = async (req, res) => {
+  let data = req.body;
+
+  let whr = "";
+  whr += ` and login.uid = ${data.uid}`;
+
+  let data1 = {
+    whr: whr,
+  };
+  let dt = JSON.stringify(data1);
+  let sdt = dt.replace(/\\/g, "");
+
+  let sql = `CALL sp_login(?,?)`;
+  db.query(sql, [sdt, 4], (err, result) => {
+    if (err) {
+      let data = {
+        code: 500,
+        msg: "Something went wrong! please try again",
+        err: err,
+      };
+      return res.json(data);
+    }
+    if (!result[0]) {
+      let data = {
+        code: 300,
+        msg: "Data not found",
+      };
+      return res.json(data);
+    } else {
+      // console.log(result[0]);
+      let resdata = JSON.parse(result[0][0].userpick);
+      let resdata1 = [];
+      resdata.forEach((element) => {
+        // console.log(element);
+        imgdelete("./Uploads/Status/" + element.img);
+      });
+      resdata = {
+        code: 200,
+
+        msg: "Delete Image successfully",
+      };
+
+      return res.json(resdata);
+    }
+  });
 };

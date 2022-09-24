@@ -3,6 +3,8 @@ const db = require("../db/db");
 const { FollowmasterModel } = require("../models/Followmaster");
 const { execute_query } = require("../routes/globalroute");
 
+exports.function = () => {};
+
 exports.followmastertbl = async (req, res) => {
   let sql = `CREATE TABLE ${new FollowmasterModel().tablename}(
       ${Object.entries(new FollowmasterModel().data[0])
@@ -26,8 +28,12 @@ exports.followmastertbl = async (req, res) => {
 
 exports.follow = async (req, res) => {
   const data = req.body;
+  let data1={
+    "followuid":data.uid,
+    "followeruid":data.followid,
+  }
 
-  let dt = JSON.stringify(data);
+  let dt = JSON.stringify(data1);
   let sdt = dt.replace(/\\/g, "");
 
   let sql = `CALL sp_followmaster(?,?)`;
@@ -58,8 +64,11 @@ exports.follow = async (req, res) => {
 
 exports.unfollow = async (req, res) => {
   const data = req.body;
-
-  let dt = JSON.stringify(data);
+  let data1={
+    "followuid":data.uid,
+    "followeruid":data.followid
+  }
+  let dt = JSON.stringify(data1);
   let sdt = dt.replace(/\\/g, "");
 
   let sql = `CALL sp_followmaster(?,?)`;
@@ -112,6 +121,54 @@ exports.getfollowdetail = async (req, res) => {
     const data1 = {
       code: 200,
       data: resdata[0],
+      msg: "Data found successfully",
+    };
+
+    return res.json(data1);
+  }
+};
+exports.following = async (req, res) => {
+  const data = req.body;
+  let whr = "";
+  // if (data.isfollow <= 0) {
+  //   whr += ` and followmaster.followuid = ${data.uid}`;
+  // } else {
+  //   whr += ` and followmaster.followeruid = ${data.uid}`;
+  // }
+  whr += ` and followmaster.followeruid = ${data.uid}`;
+
+  let data1 = {
+    whr: whr,
+    isfollow: data.isfollow,
+  };
+  let dt = JSON.stringify(data1);
+  let sdt = dt.replace(/\\/g, "");
+
+  let sql = `CALL sp_followmaster(?,?)`;
+  const resdata = await execute_query(sql, sdt, 4);
+  if (resdata.code == 500) {
+    return res.json(resdata);
+  } else if (resdata.code == 600) {
+    return res.json(resdata);
+  } else {
+    if (!resdata[0][0]) {
+      const data1 = {
+        code: 300,
+        msg: "Data not found",
+      };
+
+      return res.json(data1);
+    }
+    let newArr=[];
+    resdata[0].forEach(element => {
+      let followingdata={"id":element.followid ,"following":0,"follower":0,
+      "uname":element.uname,"mobileno":element.mobileno,"emailid":element.emailid,
+      "refmoileno":"-","profilepic":element.userpick,"city":element.city,"state":element.state,"country":element.country};
+      newArr.push(followingdata);
+    });
+    const data1 = {
+      code: 200,
+      data: newArr,
       msg: "Data found successfully",
     };
 
