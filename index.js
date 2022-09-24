@@ -24,5 +24,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/", function (req, res) {
+  res.send("Shree gurudev datta");
+  res.end();
+});
+
 // routes
 app.use("/api/", Routers);
