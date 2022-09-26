@@ -3,7 +3,7 @@ const Routers = require("./routes/routes");
 const createdb = require("./routes/globalroute");
 var bodyParser = require("body-parser");
 
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
 
 const app = express();
 
