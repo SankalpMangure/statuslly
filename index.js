@@ -8,8 +8,13 @@ const bcrypt = require("bcrypt");
 const app = express();
 
 const PORT = process.env.PORT || 4000;
+// <<<<<<< HEAD
 // app.listen(PORT, () => {
-app.listen(4000, () => {
+// app.listen(4000, () => {
+// =======
+// app.listen(4000, () => {
+app.listen(PORT, () => {
+  // >>>>>>> 77544ed08e80eff88a6803168cffae2cd70d6a8c
   console.log("connected to db & listening on port 4000");
 });
 
