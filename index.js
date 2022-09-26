@@ -4,6 +4,7 @@ const createdb = require("./routes/globalroute");
 var bodyParser = require("body-parser");
 
 // const bcrypt = require("bcrypt");
+require('dotenv').config({ path: __dirname + '/db/.env' })
 
 const app = express();
 
