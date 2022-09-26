@@ -7,8 +7,15 @@ const bcrypt = require("bcrypt");
 
 const app = express();
 
+const PORT = process.env.PORT || 4000;
+// app.listen(PORT, () => {
 app.listen(4000, () => {
   console.log("connected to db & listening on port 4000");
+});
+
+app.get("/", function (req, res) {
+  res.send("Shree gurudev datta");
+  res.end();
 });
 
 // middleware
