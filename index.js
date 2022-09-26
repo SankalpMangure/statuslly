@@ -18,10 +18,10 @@ app.listen(PORT, () => {
   console.log("connected to db & listening on port 4000");
 });
 
-// app.get("/", function (req, res) {
-//   res.send("Shree gurudev datta");
-//   res.end();
-// });
+app.get("/", function (req, res) {
+  res.send("Shree gurudev datta a");
+  res.end();
+});
 
 // middleware
 // app.use(bodyParser.urlencoded({ extended: false }));
