@@ -9,7 +9,6 @@ require('dotenv').config({ path: __dirname + '/db/.env' })
 const app = express();
 
 const PORT = process.env.PORT || 4000;
-const PORT = process.env.PORT || 3000;
 // <<<<<<< HEAD
 // app.listen(PORT, () => {
 // app.listen(4000, () => {
